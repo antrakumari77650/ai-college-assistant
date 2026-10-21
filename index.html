@@ -17,18 +17,53 @@
     <header class="header">
         <div class="logo">AI College Assistant</div>
 
-        <button class="home-btn" onclick="goHome()">
-            🏠 Home
-        </button>
+        <div class="header-actions"
+             style="display:flex; align-items:center; justify-content:flex-end; gap:10px; flex-wrap:wrap;">
+
+            <span id="auth-status"
+                  role="status"
+                  aria-live="polite"
+                  style="font-size:14px;">
+                Not signed in
+            </span>
+
+            <button
+                type="button"
+                id="login-btn"
+                class="home-btn"
+                onclick="signIn()">
+                🔐 Sign in / Create account
+            </button>
+
+            <button
+                type="button"
+                id="logout-btn"
+                class="home-btn"
+                onclick="signOut()"
+                hidden>
+                Sign out
+            </button>
+
+            <button
+                type="button"
+                class="home-btn"
+                onclick="goHome()">
+                🏠 Home
+            </button>
+        </div>
     </header>
 
-    <!-- Home / Subjects -->
+    <!-- Main Content -->
     <main>
 
+        <!-- Home / Subjects -->
         <section id="subjects" class="subjects-section">
+
             <div class="hero">
                 <p class="eyebrow">YOUR SMART STUDY PARTNER</p>
+
                 <h1>Learn Smarter, Score Better</h1>
+
                 <p>
                     Access study material, video lectures,
                     previous year questions and AI assistance.
@@ -40,6 +75,7 @@
             <div class="subject-grid">
 
                 <button
+                    type="button"
                     class="subject-card"
                     onclick="selectSubject('Data Structures')">
 
@@ -50,6 +86,7 @@
                 </button>
 
                 <button
+                    type="button"
                     class="subject-card"
                     onclick="selectSubject('Maths-4')">
 
@@ -60,6 +97,7 @@
                 </button>
 
                 <button
+                    type="button"
                     class="subject-card"
                     onclick="selectSubject('Computer Organization and Architecture')">
 
@@ -75,7 +113,10 @@
         <!-- Subject Options -->
         <section id="options-section" class="content-section" hidden>
 
-            <button class="back-btn" onclick="goHome()">
+            <button
+                type="button"
+                class="back-btn"
+                onclick="goHome()">
                 ← Back to Subjects
             </button>
 
@@ -88,6 +129,7 @@
             <div class="option-grid">
 
                 <button
+                    type="button"
                     class="option-card"
                     onclick="openStudyMaterial()">
 
@@ -98,6 +140,7 @@
                 </button>
 
                 <button
+                    type="button"
                     class="option-card"
                     onclick="openPYQ()">
 
@@ -113,7 +156,10 @@
         <!-- Study Material: Notes or Lectures -->
         <section id="material-section" class="content-section" hidden>
 
-            <button class="back-btn" onclick="backToOptions()">
+            <button
+                type="button"
+                class="back-btn"
+                onclick="backToOptions()">
                 ← Back to Options
             </button>
 
@@ -126,6 +172,7 @@
             <div class="option-grid">
 
                 <button
+                    type="button"
                     class="option-card"
                     onclick="openUnits('Notes')">
 
@@ -136,6 +183,7 @@
                 </button>
 
                 <button
+                    type="button"
                     class="option-card"
                     onclick="openUnits('Lectures')">
 
@@ -151,7 +199,10 @@
         <!-- Units -->
         <section id="unit-section" class="content-section" hidden>
 
-            <button class="back-btn" onclick="backToMaterial()">
+            <button
+                type="button"
+                class="back-btn"
+                onclick="backToMaterial()">
                 ← Back to Study Material
             </button>
 
@@ -168,7 +219,10 @@
         <!-- Selected Unit Resource -->
         <section id="resource-section" class="content-section" hidden>
 
-            <button class="back-btn" onclick="backToUnits()">
+            <button
+                type="button"
+                class="back-btn"
+                onclick="backToUnits()">
                 ← Back to Units
             </button>
 
@@ -193,7 +247,10 @@
         <!-- Separate PYQ Section -->
         <section id="pyq-section" class="content-section" hidden>
 
-            <button class="back-btn" onclick="backToOptions()">
+            <button
+                type="button"
+                class="back-btn"
+                onclick="backToOptions()">
                 ← Back to Options
             </button>
 
@@ -246,4 +303,6 @@
 
 </body>
 </html>
+
+
 

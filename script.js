@@ -321,5 +321,324 @@ window.backToMaterial = backToMaterial;
 window.backToUnits = backToUnits;
 window.goHome = goHome;
 
+/* =====================================================
+   COGNITO LOGIN + JWT AUTHENTICATION
+   Existing notes/PDF functions are preserved.
+   ===================================================== */
 
+(() => {
+    const COGNITO_DOMAIN =
+        "https://ap-south-1cc1u6ilxb.auth.ap-south-1.amazoncognito.com";
 
+    const COGNITO_CLIENT_ID =
+        "17humrejevac0hav084j84t16k";
+
+    const COGNITO_REDIRECT_URI =
+        "https://gauravsinghcoderr.github.io/ai-college-assistant/";
+
+    const COGNITO_LOGOUT_URI =
+        "https://gauravsinghcoderr.github.io/ai-college-assistant/";
+
+    const TOKEN_KEY = "aca_cognito_access_token";
+    const EXPIRY_KEY = "aca_cognito_access_expiry";
+    const STATE_KEY = "aca_cognito_oauth_state";
+    const VERIFIER_KEY = "aca_cognito_pkce_verifier";
+
+    // Get the current valid access token.
+    function getAccessToken() {
+        const token = sessionStorage.getItem(TOKEN_KEY);
+        const expiry = Number(sessionStorage.getItem(EXPIRY_KEY) || 0);
+
+        if (!token || Date.now() >= expiry) {
+            sessionStorage.removeItem(TOKEN_KEY);
+            sessionStorage.removeItem(EXPIRY_KEY);
+            return null;
+        }
+
+        return token;
+    }
+
+    // Update Login/Logout buttons in index.html.
+    function updateAuthUI() {
+        const signedIn = Boolean(getAccessToken());
+
+        const loginButton = document.getElementById("login-btn");
+        const logoutButton = document.getElementById("logout-btn");
+        const status = document.getElementById("auth-status");
+
+        if (loginButton) {
+            loginButton.hidden = signedIn;
+            loginButton.style.display = signedIn ? "none" : "";
+        }
+
+        if (logoutButton) {
+            logoutButton.hidden = !signedIn;
+            logoutButton.style.display = signedIn ? "" : "none";
+        }
+
+        if (status) {
+            status.textContent = signedIn
+                ? "Signed in"
+                : "Not signed in";
+        }
+    }
+
+    // Generate a cryptographically random string for OAuth PKCE.
+    function randomString(length = 64) {
+        const bytes = new Uint8Array(length);
+        crypto.getRandomValues(bytes);
+
+        return Array.from(bytes, byte =>
+            String.fromCharCode(bytes[0] * 0 + byte)
+        ).join("");
+    }
+
+    function base64UrlEncode(bytes) {
+        let binary = "";
+
+        bytes.forEach(byte => {
+            binary += String.fromCharCode(byte);
+        });
+
+        return btoa(binary)
+            .replace(/\+/g, "-")
+            .replace(/\//g, "_")
+            .replace(/=+$/, "");
+    }
+
+    async function createCodeChallenge(verifier) {
+        const data = new TextEncoder().encode(verifier);
+        const digest = await crypto.subtle.digest("SHA-256", data);
+
+        return base64UrlEncode(new Uint8Array(digest));
+    }
+
+    // Start Cognito Hosted UI login / account creation.
+    async function signIn() {
+        try {
+            if (!window.crypto?.subtle) {
+                throw new Error("Secure login requires HTTPS.");
+            }
+
+            const verifier = base64UrlEncode(
+                crypto.getRandomValues(new Uint8Array(32))
+            );
+
+            const state = base64UrlEncode(
+                crypto.getRandomValues(new Uint8Array(24))
+            );
+
+            const challenge = await createCodeChallenge(verifier);
+
+            sessionStorage.setItem(VERIFIER_KEY, verifier);
+            sessionStorage.setItem(STATE_KEY, state);
+
+            const authorizeURL = new URL(
+                `${COGNITO_DOMAIN}/oauth2/authorize`
+            );
+
+            authorizeURL.search = new URLSearchParams({
+                client_id: COGNITO_CLIENT_ID,
+                response_type: "code",
+                scope: "openid email",
+                redirect_uri: COGNITO_REDIRECT_URI,
+                state: state,
+                code_challenge_method: "S256",
+                code_challenge: challenge
+            }).toString();
+
+            window.location.assign(authorizeURL.toString());
+        } catch (error) {
+            console.error("Unable to start Cognito login:", error);
+            alert("Login start nahi ho saka. HTTPS aur Cognito settings check karo.");
+        }
+    }
+
+    // Sign out from this app and Cognito Hosted UI.
+    function signOut() {
+        sessionStorage.removeItem(TOKEN_KEY);
+        sessionStorage.removeItem(EXPIRY_KEY);
+        sessionStorage.removeItem(STATE_KEY);
+        sessionStorage.removeItem(VERIFIER_KEY);
+
+        updateAuthUI();
+
+        const logoutURL = new URL(`${COGNITO_DOMAIN}/logout`);
+
+        logoutURL.search = new URLSearchParams({
+            client_id: COGNITO_CLIENT_ID,
+            logout_uri: COGNITO_LOGOUT_URI
+        }).toString();
+
+        window.location.assign(logoutURL.toString());
+    }
+
+    // Make inline HTML onclick handlers able to call these functions.
+    window.signIn = signIn;
+    window.signOut = signOut;
+
+    /*
+     * Automatically attach the Cognito access token to requests
+     * sent to our existing AWS API. Requests to other URLs,
+     * including presigned S3 PDF URLs, are left unchanged.
+     */
+    const originalFetch = window.fetch.bind(window);
+
+    window.fetch = function (input, init = {}) {
+        const requestURL =
+            typeof input === "string" || input instanceof URL
+                ? String(input)
+                : input.url;
+
+        if (
+            typeof API_BASE_URL === "undefined" ||
+            !requestURL.startsWith(API_BASE_URL)
+        ) {
+            return originalFetch(input, init);
+        }
+
+        const headers = new Headers(
+            input instanceof Request ? input.headers : undefined
+        );
+
+        if (init.headers) {
+            new Headers(init.headers).forEach((value, key) => {
+                headers.set(key, value);
+            });
+        }
+
+        const token = getAccessToken();
+
+        if (token) {
+            headers.set("Authorization", `Bearer ${token}`);
+        }
+
+        return originalFetch(input, {
+            ...init,
+            headers
+        });
+    };
+
+    // Exchange the one-time authorization code for tokens.
+    async function finishLoginIfNeeded() {
+        const currentURL = new URL(window.location.href);
+        const code = currentURL.searchParams.get("code");
+        const returnedState = currentURL.searchParams.get("state");
+        const oauthError = currentURL.searchParams.get("error");
+
+        if (oauthError) {
+            currentURL.searchParams.delete("code");
+            currentURL.searchParams.delete("state");
+            currentURL.searchParams.delete("error");
+            currentURL.searchParams.delete("error_description");
+
+            history.replaceState(
+                {},
+                document.title,
+                currentURL.pathname + currentURL.search + currentURL.hash
+            );
+
+            sessionStorage.removeItem(STATE_KEY);
+            sessionStorage.removeItem(VERIFIER_KEY);
+
+            updateAuthUI();
+            alert("Cognito login cancel ya fail hua. Dobara try karo.");
+            return;
+        }
+
+        if (!code) {
+            updateAuthUI();
+            return;
+        }
+
+        const expectedState = sessionStorage.getItem(STATE_KEY);
+        const verifier = sessionStorage.getItem(VERIFIER_KEY);
+
+        if (!expectedState || returnedState !== expectedState || !verifier) {
+            sessionStorage.removeItem(STATE_KEY);
+            sessionStorage.removeItem(VERIFIER_KEY);
+
+            history.replaceState(
+                {},
+                document.title,
+                currentURL.pathname
+            );
+
+            updateAuthUI();
+            alert("Login verification failed. Please sign in again.");
+            return;
+        }
+
+        try {
+            const response = await originalFetch(
+                `${COGNITO_DOMAIN}/oauth2/token`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type":
+                            "application/x-www-form-urlencoded"
+                    },
+                    body: new URLSearchParams({
+                        grant_type: "authorization_code",
+                        client_id: COGNITO_CLIENT_ID,
+                        code: code,
+                        redirect_uri: COGNITO_REDIRECT_URI,
+                        code_verifier: verifier
+                    })
+                }
+            );
+
+            const result = await response.json();
+
+            if (!response.ok || !result.access_token) {
+                throw new Error(
+                    result.error_description ||
+                    result.error ||
+                    "Token exchange failed"
+                );
+            }
+
+            sessionStorage.setItem(TOKEN_KEY, result.access_token);
+
+            sessionStorage.setItem(
+                EXPIRY_KEY,
+                String(
+                    Date.now() +
+                    Math.max(60, (result.expires_in || 3600) - 60) * 1000
+                )
+            );
+
+            sessionStorage.removeItem(STATE_KEY);
+            sessionStorage.removeItem(VERIFIER_KEY);
+
+            // Remove the one-time code from the address bar and
+            // reload the page so existing app code runs with the token.
+            window.location.replace(COGNITO_REDIRECT_URI);
+        } catch (error) {
+            console.error("Cognito token exchange failed:", error);
+
+            sessionStorage.removeItem(TOKEN_KEY);
+            sessionStorage.removeItem(EXPIRY_KEY);
+            sessionStorage.removeItem(STATE_KEY);
+            sessionStorage.removeItem(VERIFIER_KEY);
+
+            currentURL.searchParams.delete("code");
+            currentURL.searchParams.delete("state");
+
+            history.replaceState(
+                {},
+                document.title,
+                currentURL.pathname + currentURL.search + currentURL.hash
+            );
+
+            updateAuthUI();
+            alert(
+                "Login complete nahi hua. Cognito callback URL, App Client " +
+                "settings aur browser Console mein error check karna hoga."
+            );
+        }
+    }
+
+    updateAuthUI();
+    finishLoginIfNeeded();
+})();
