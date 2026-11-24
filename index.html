@@ -1,308 +1,435 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>AI College Assistant</title>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="A focused study portal for AKTU B.Tech students. Browse unit-wise notes and open available PDFs.">
+    <meta name="theme-color" content="#F5F7FF" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#0B1020" media="(prefers-color-scheme: dark)">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="AI College Assistant">
+    <meta property="og:description" content="A focused study portal for AKTU B.Tech students.">
+    <meta property="og:url" content="https://gauravsinghcoderr.github.io/ai-college-assistant/">
+    <title>AI College Assistant — Learn Smarter, Score Better</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%236366F1'/%3E%3Cpath d='m10 26 22-12 22 12-22 12-22-12Zm9 6v11c8 6 18 6 26 0V32M54 26v14' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='m46 11 2.5 5.5L54 19l-5.5 2.5L46 27l-2.5-5.5L38 19l5.5-2.5L46 11Z' fill='%2322D3EE'/%3E%3C/svg%3E">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <script src="script.js" defer></script>
 </head>
 
 <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
 
-    <!-- Header -->
+    <div class="aurora-background" aria-hidden="true">
+        <span class="aurora-blob aurora-blob-one"></span>
+        <span class="aurora-blob aurora-blob-two"></span>
+        <span class="aurora-blob aurora-blob-three"></span>
+        <span class="dot-grid"></span>
+    </div>
+
     <header class="header">
-        <div class="logo">AI College Assistant</div>
-
-        <div class="header-actions"
-             style="display:flex; align-items:center; justify-content:flex-end; gap:10px; flex-wrap:wrap;">
-
-            <span id="auth-status"
-                  role="status"
-                  aria-live="polite"
-                  style="font-size:14px;">
-                Not signed in
+        <a class="brand logo" href="#subjects" onclick="goHome(); return false;" aria-label="AI College Assistant home">
+            <span class="brand-mark" aria-hidden="true">
+                <svg viewBox="0 0 44 44" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m5 18 17-9 17 9-17 9-17-9Z"></path>
+                    <path d="M12 22v8c6 5 14 5 20 0v-8M39 18v12"></path>
+                    <path d="m33 5 1.8 4 4.2 1.8-4.2 1.8-1.8 4-1.8-4L27 10.8 31.2 9 33 5Z"></path>
+                </svg>
             </span>
+            <span class="brand-name">AI College <strong>Assistant</strong></span>
+        </a>
 
-            <button
-                type="button"
-                id="login-btn"
-                class="home-btn"
-                onclick="signIn()">
-                🔐 Sign in / Create account
+        <nav class="header-actions" aria-label="Account and site controls">
+            <button type="button" class="command-open" aria-label="Open quick search (Control or Command + K)" title="Quick search (Ctrl+K)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="10.8" cy="10.8" r="6.8"></circle>
+                    <path d="m16 16 4.5 4.5"></path>
+                </svg>
+                <span class="command-open-label">Search</span>
+                <kbd>Ctrl K</kbd>
             </button>
 
-            <button
-                type="button"
-                id="logout-btn"
-                class="home-btn"
-                onclick="signOut()"
-                hidden>
-                Sign out
+            <button type="button" id="theme-toggle" class="theme-toggle" aria-label="Toggle color theme" aria-pressed="false" title="Toggle color theme">
+                <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="4"></circle>
+                    <path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"></path>
+                </svg>
+                <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M20.2 15.1A8.5 8.5 0 0 1 8.9 3.8 8.5 8.5 0 1 0 20.2 15.1Z"></path>
+                </svg>
             </button>
 
-            <button
-                type="button"
-                class="home-btn"
-                onclick="goHome()">
-                🏠 Home
+            <span id="auth-status" class="auth-status" role="status" aria-live="polite">Not signed in</span>
+
+            <button type="button" id="login-btn" class="header-btn home-btn login-btn" onclick="signIn()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                    <path d="m10 17 5-5-5-5m5 5H3"></path>
+                </svg>
+                <span class="header-btn-label">Sign in / Create account</span>
             </button>
-        </div>
+
+            <button type="button" id="logout-btn" class="header-btn home-btn logout-btn" onclick="signOut()" hidden>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <path d="m16 17 5-5-5-5m5 5H9"></path>
+                </svg>
+                <span class="header-btn-label">Sign out</span>
+            </button>
+
+            <button type="button" class="header-btn home-btn" onclick="goHome()" aria-label="Home">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1V10Z"></path>
+                </svg>
+                <span class="header-btn-label">Home</span>
+            </button>
+        </nav>
     </header>
 
-    <!-- Main Content -->
-    <main>
-
-        <!-- Home / Subjects -->
-        <section id="subjects" class="subjects-section">
-
-            <div class="hero">
-                <p class="eyebrow">YOUR SMART STUDY PARTNER</p>
-
-                <h1>Learn Smarter, Score Better</h1>
-
-                <p>
-                    Access study material, video lectures,
-                    previous year questions and AI assistance.
-                </p>
-            </div>
-
-            <h2>Select Your Subject</h2>
-
-            <div class="subject-grid">
-
-                <button
-                    type="button"
-                    class="subject-card"
-                    onclick="selectSubject('Data Structures')">
-
-                    <span class="card-icon">💻</span>
-                    <h3>Data Structures</h3>
-                    <p>DS Notes, Lectures and PYQs</p>
-                    <span class="card-link">Explore Subject →</span>
-                </button>
-
-                <button
-                    type="button"
-                    class="subject-card"
-                    onclick="selectSubject('Maths-4')">
-
-                    <span class="card-icon">📐</span>
-                    <h3>Maths-4</h3>
-                    <p>Mathematics Notes, Lectures and PYQs</p>
-                    <span class="card-link">Explore Subject →</span>
-                </button>
-
-                <button
-                    type="button"
-                    class="subject-card"
-                    onclick="selectSubject('Computer Organization and Architecture')">
-
-                    <span class="card-icon">🖥️</span>
-                    <h3>Computer Organization</h3>
-                    <p>COA study resources</p>
-                    <span class="card-link">Explore Subject →</span>
-                </button>
-
-            </div>
-        </section>
-
-        <!-- Subject Options -->
-        <section id="options-section" class="content-section" hidden>
-
-            <button
-                type="button"
-                class="back-btn"
-                onclick="goHome()">
-                ← Back to Subjects
-            </button>
-
-            <div class="section-heading">
-                <p class="eyebrow">YOUR SUBJECT</p>
-                <h2 id="selected-subject">Select an Option</h2>
-                <p>Choose what you want to study.</p>
-            </div>
-
-            <div class="option-grid">
-
-                <button
-                    type="button"
-                    class="option-card"
-                    onclick="openStudyMaterial()">
-
-                    <span class="card-icon">📚</span>
-                    <h3>Study Material</h3>
-                    <p>Notes and video lectures organized by unit.</p>
-                    <span class="card-link">Open Study Material →</span>
-                </button>
-
-                <button
-                    type="button"
-                    class="option-card"
-                    onclick="openPYQ()">
-
-                    <span class="card-icon">📝</span>
-                    <h3>Previous Year Questions</h3>
-                    <p>Choose an academic year and find question papers.</p>
-                    <span class="card-link">Explore PYQs →</span>
-                </button>
-
-            </div>
-        </section>
-
-        <!-- Study Material: Notes or Lectures -->
-        <section id="material-section" class="content-section" hidden>
-
-            <button
-                type="button"
-                class="back-btn"
-                onclick="backToOptions()">
-                ← Back to Options
-            </button>
-
-            <div class="section-heading">
-                <p class="eyebrow">STUDY MATERIAL</p>
-                <h2 id="material-heading">Study Material</h2>
-                <p>Select Notes or Video Lectures.</p>
-            </div>
-
-            <div class="option-grid">
-
-                <button
-                    type="button"
-                    class="option-card"
-                    onclick="openUnits('Notes')">
-
-                    <span class="card-icon">📖</span>
-                    <h3>Notes</h3>
-                    <p>Open unit-wise notes and PDFs.</p>
-                    <span class="card-link">Browse Notes →</span>
-                </button>
-
-                <button
-                    type="button"
-                    class="option-card"
-                    onclick="openUnits('Lectures')">
-
-                    <span class="card-icon">🎥</span>
-                    <h3>Video Lectures</h3>
-                    <p>Find lectures organized by unit.</p>
-                    <span class="card-link">Browse Lectures →</span>
-                </button>
-
-            </div>
-        </section>
-
-        <!-- Units -->
-        <section id="unit-section" class="content-section" hidden>
-
-            <button
-                type="button"
-                class="back-btn"
-                onclick="backToMaterial()">
-                ← Back to Study Material
-            </button>
-
-            <div class="section-heading">
-                <p class="eyebrow" id="unit-resource-label">NOTES</p>
-                <h2 id="selected-unit-heading">Select Unit</h2>
-                <p>Select a unit to view its material.</p>
-            </div>
-
-            <div id="unit-buttons" class="unit-grid"></div>
-
-        </section>
-
-        <!-- Selected Unit Resource -->
-        <section id="resource-section" class="content-section" hidden>
-
-            <button
-                type="button"
-                class="back-btn"
-                onclick="backToUnits()">
-                ← Back to Units
-            </button>
-
-            <div class="section-heading">
-                <p class="eyebrow" id="resource-label">STUDY RESOURCE</p>
-                <h2 id="selected-unit">Selected Unit</h2>
-            </div>
-
-            <div id="resource-content" class="resource-content"></div>
-
-            <div class="ai-placeholder">
-                <span class="card-icon">🤖</span>
-                <h3>Have a Doubt?</h3>
-                <p>
-                    An AI Doubt Solver will be added here to explain
-                    topics in simple language.
-                </p>
-            </div>
-
-        </section>
-
-        <!-- Separate PYQ Section -->
-        <section id="pyq-section" class="content-section" hidden>
-
-            <button
-                type="button"
-                class="back-btn"
-                onclick="backToOptions()">
-                ← Back to Options
-            </button>
-
-            <div class="section-heading">
-                <p class="eyebrow">EXAM PREPARATION</p>
-                <h2 id="pyq-heading">Previous Year Questions</h2>
-                <p>Select an academic year and paper type.</p>
-            </div>
-
-            <div class="pyq-panel">
-
-                <label for="pyq-year" class="pyq-label">
-                    Academic Year
-                </label>
-
-                <select id="pyq-year" class="pyq-select">
-                    <option value="2025-26" selected>2025–26</option>
-                    <option value="2024-25">2024–25</option>
-                    <option value="2023-24">2023–24</option>
-                    <option value="2022-23">2022–23</option>
-                    <option value="2021-22">2021–22</option>
-                </select>
-
-                <label for="pyq-type" class="pyq-label">
-                    Question Paper Type
-                </label>
-
-                <select id="pyq-type" class="pyq-select">
-                    <option value="all" selected>
-                        All Questions / Complete Paper
-                    </option>
-                    <option value="unit">
-                        Unit-wise Questions
-                    </option>
-                </select>
-
-                <div id="pyq-result" class="pyq-result">
-                    Select a year to view available papers.
+    <main id="main-content">
+        <section id="subjects" class="subjects-section" aria-labelledby="home-title">
+            <div class="hero reveal">
+                <div class="hero-copy">
+                    <p class="eyebrow"><span class="eyebrow-dot"></span> Your focused study companion</p>
+                    <h1 id="home-title" tabindex="-1">Learn Smarter,<br><span class="gradient-text">Score Better.</span></h1>
+                    <p class="hero-description">A calmer way to find your AKTU study material. Choose a subject, explore unit-wise notes, and open available PDFs.</p>
+                    <div class="hero-actions">
+                        <button type="button" class="button button-primary" onclick="document.getElementById('subject-grid').scrollIntoView({ behavior: 'smooth', block: 'center' })">
+                            Browse subjects
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"></path></svg>
+                        </button>
+                        <a class="button button-quiet" href="#how-it-works">How it works</a>
+                    </div>
                 </div>
 
+                <div class="hero-art" aria-hidden="true">
+                    <span class="art-orbit orbit-one"></span>
+                    <span class="art-orbit orbit-two"></span>
+                    <div class="art-center">
+                        <svg viewBox="0 0 128 128" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 39c14-8 28-8 42 0v57c-14-8-28-8-42 0V39Z"></path>
+                            <path d="M106 39c-14-8-28-8-42 0v57c14-8 28-8 42 0V39Z"></path>
+                            <path d="M64 39v57M33 53c7-3 14-3 21 0m-21 12c7-3 14-3 21 0m22-12c7-3 14-3 21 0M75 65c7-3 14-3 21 0"></path>
+                            <path d="m90 15 3.5 8L102 27l-8.5 3.5L90 39l-3.5-8.5L78 27l8.5-4L90 15Z"></path>
+                        </svg>
+                    </div>
+                    <span class="floating-note floating-book">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v17H6.5A2.5 2.5 0 0 1 4 17.5v-12Z"></path><path d="M4 17.5A2.5 2.5 0 0 1 6.5 15H20M8 7h8m-8 4h6"></path></svg>
+                    </span>
+                    <span class="floating-note floating-formula">∑ &nbsp; f(x)</span>
+                    <span class="floating-note floating-chip">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="5" width="14" height="14" rx="3"></rect><path d="M9 9h6v6H9zM9 2v3m6-3v3M9 19v3m6-3v3M2 9h3m-3 6h3m14-6h3m-3 6h3"></path></svg>
+                    </span>
+                </div>
+            </div>
+
+            <ul class="trust-chips reveal" aria-label="Portal highlights">
+                <li><span class="trust-dot dot-indigo"></span>3 Subjects</li>
+                <li><span class="trust-dot dot-violet"></span>5 Units each</li>
+                <li><span class="trust-dot dot-cyan"></span>Unit-wise PDF notes</li>
+                <li><span class="trust-dot dot-green"></span>Free for students</li>
+            </ul>
+
+            <section id="how-it-works" class="how-section reveal" aria-labelledby="how-title">
+                <div class="section-intro">
+                    <p class="eyebrow">A simple study flow</p>
+                    <h2 id="how-title">From subject to study session</h2>
+                </div>
+                <ol class="how-grid">
+                    <li class="how-card">
+                        <span class="step-number">01</span>
+                        <span class="how-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m3 8 9-5 9 5-9 5-9-5Z"></path><path d="M6 10v6c4 3 8 3 12 0v-6"></path></svg>
+                        </span>
+                        <h3>Choose a subject</h3>
+                        <p>Start with the course you’re studying.</p>
+                    </li>
+                    <li class="how-card">
+                        <span class="step-number">02</span>
+                        <span class="how-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="3"></rect><path d="M9 8h6m-6 4h6m-6 4h3"></path></svg>
+                        </span>
+                        <h3>Pick a unit</h3>
+                        <p>Browse notes arranged across five units.</p>
+                    </li>
+                    <li class="how-card">
+                        <span class="step-number">03</span>
+                        <span class="how-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9Z"></path><path d="M14 3v6h6m-8 4v6m-3-3 3 3 3-3"></path></svg>
+                        </span>
+                        <h3>Open your PDF</h3>
+                        <p>Open an available PDF. Online notes use signed links; project PDFs are public.</p>
+                    </li>
+                </ol>
+            </section>
+
+            <section class="subject-section reveal" aria-labelledby="subjects-title">
+                <div class="section-heading-row">
+                    <div>
+                        <p class="eyebrow">Your AKTU study space</p>
+                        <h2 id="subjects-title">Choose your subject</h2>
+                    </div>
+                    <p class="section-side-note">Pick up where your next study session begins.</p>
+                </div>
+
+                <div id="subject-grid" class="subject-grid">
+                    <button type="button" class="subject-card subject-card-ds" onclick="selectSubject('Data Structures')" aria-label="Explore Data Structures">
+                        <span class="subject-card-glow" aria-hidden="true"></span>
+                        <span class="card-icon icon-ds" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M8 5 3 12l5 7m8-14 5 7-5 7m-2-15-4 18"></path></svg>
+                        </span>
+                        <span class="subject-card-label">B.Tech · Core subject</span>
+                        <h3>Data Structures</h3>
+                        <p>Explore notes for algorithms, structures, and core concepts.</p>
+                        <span class="card-link">Explore subject <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"></path></svg></span>
+                    </button>
+
+                    <button type="button" class="subject-card subject-card-maths" onclick="selectSubject('Maths-4')" aria-label="Explore Maths-4">
+                        <span class="subject-card-glow" aria-hidden="true"></span>
+                        <span class="card-icon icon-maths" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m4 18 7-13 9 13H4Z"></path><path d="m11 5 3 13m-4-4h8"></path></svg>
+                        </span>
+                        <span class="subject-card-label">B.Tech · Mathematics</span>
+                        <h3>Maths-4</h3>
+                        <p>Find unit-wise mathematics notes for your next revision.</p>
+                        <span class="card-link">Explore subject <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"></path></svg></span>
+                    </button>
+
+                    <button type="button" class="subject-card subject-card-coa" onclick="selectSubject('Computer Organization and Architecture')" aria-label="Explore Computer Organization and Architecture">
+                        <span class="subject-card-glow" aria-hidden="true"></span>
+                        <span class="card-icon icon-coa" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="5" width="14" height="14" rx="3"></rect><path d="M9 9h6v6H9zM9 2v3m6-3v3M9 19v3m6-3v3M2 9h3m-3 6h3m14-6h3m-3 6h3"></path></svg>
+                        </span>
+                        <span class="subject-card-label">B.Tech · Core subject</span>
+                        <h3>Computer Organization &amp; Architecture</h3>
+                        <p>Explore the subject space for computer architecture.</p>
+                        <span class="card-link">Explore subject <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"></path></svg></span>
+                    </button>
+                </div>
+            </section>
+
+            <section class="collection-section reveal" aria-labelledby="recent-title">
+                <div class="section-heading-row">
+                    <div>
+                        <p class="eyebrow">Pick up where you left off</p>
+                        <h2 id="recent-title">Recently opened</h2>
+                    </div>
+                    <button type="button" class="text-button" id="clear-recent" aria-label="Clear recently opened PDFs">Clear</button>
+                </div>
+                <p class="privacy-note">Stored only on this device.</p>
+                <div id="recent-list" class="collection-list" aria-live="polite"></div>
+            </section>
+
+            <section class="collection-section reveal" aria-labelledby="saved-title">
+                <div class="section-heading-row">
+                    <div>
+                        <p class="eyebrow">Keep useful notes close</p>
+                        <h2 id="saved-title">Saved on this device</h2>
+                    </div>
+                    <button type="button" class="text-button" id="clear-bookmarks" aria-label="Clear saved notes">Clear</button>
+                </div>
+                <p class="privacy-note">Bookmarks stay in this browser only.</p>
+                <div id="bookmarks-list" class="collection-list" aria-live="polite"></div>
+            </section>
+        </section>
+
+        <section id="options-section" class="content-section page-view" hidden aria-labelledby="selected-subject">
+            <div class="page-navigation">
+                <button type="button" class="back-btn" onclick="goHome()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>
+                    Back to subjects
+                </button>
+                <nav class="breadcrumbs" aria-label="Breadcrumb"><ol id="breadcrumbs-options" class="breadcrumb-list"></ol></nav>
+            </div>
+            <ol id="progress-options" class="progress-steps" aria-label="Study progress"></ol>
+            <div class="section-heading">
+                <p class="eyebrow">Your subject</p>
+                <h2 id="selected-subject" tabindex="-1">Select an option</h2>
+                <p>Choose how you’d like to study.</p>
+            </div>
+            <div class="option-grid">
+                <button type="button" class="option-card option-card-study" onclick="openStudyMaterial()">
+                    <span class="option-icon card-icon icon-indigo" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v17H6.5A2.5 2.5 0 0 1 4 17.5v-12Z"></path><path d="M4 17.5A2.5 2.5 0 0 1 6.5 15H20M8 7h8m-8 4h6"></path></svg>
+                    </span>
+                    <span class="card-kicker">Browse course content</span>
+                    <h3>Study Material</h3>
+                    <p>Explore unit-wise notes and see what resources are available.</p>
+                    <span class="card-link">Open study material <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"></path></svg></span>
+                </button>
+                <button type="button" class="option-card option-card-pyq" onclick="openPYQ()">
+                    <span class="option-icon card-icon icon-violet" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9Z"></path><path d="M14 3v6h6M8 13h8m-8 4h5"></path></svg>
+                    </span>
+                    <span class="card-kicker">Practice for exams</span>
+                    <h3>Previous Year Questions</h3>
+                    <p>Choose a year and paper type. Files are not available yet.</p>
+                    <span class="card-link">Explore PYQs <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"></path></svg></span>
+                </button>
             </div>
         </section>
 
+        <section id="material-section" class="content-section page-view" hidden aria-labelledby="material-heading">
+            <div class="page-navigation">
+                <button type="button" class="back-btn" onclick="backToOptions()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>
+                    Back to options
+                </button>
+                <nav class="breadcrumbs" aria-label="Breadcrumb"><ol id="breadcrumbs-material" class="breadcrumb-list"></ol></nav>
+            </div>
+            <ol id="progress-material" class="progress-steps" aria-label="Study progress"></ol>
+            <div class="section-heading">
+                <p class="eyebrow">Study material</p>
+                <h2 id="material-heading" tabindex="-1">Study Material</h2>
+                <p>Choose a resource type to continue.</p>
+            </div>
+            <div class="option-grid">
+                <button type="button" class="option-card option-card-notes" onclick="openUnits('Notes')">
+                    <span class="option-icon card-icon icon-cyan" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9Z"></path><path d="M14 3v6h6M8 13h8m-8 4h6"></path></svg>
+                    </span>
+                    <span class="card-kicker">Available resource</span>
+                    <h3>Notes</h3>
+                    <p>Browse PDFs by unit. Online notes use signed links; project PDFs are public and open directly.</p>
+                    <span class="card-link">Browse notes <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"></path></svg></span>
+                </button>
+                <button type="button" class="option-card option-card-lectures" onclick="openUnits('Lectures')">
+                    <span class="option-icon card-icon icon-violet" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"></rect><path d="m10 9 5 3-5 3V9Z"></path></svg>
+                    </span>
+                    <span class="card-kicker">Coming soon</span>
+                    <h3>Video Lectures <span class="soon-badge">Soon</span></h3>
+                    <p>Video lecture links are not connected yet. This section is a preview.</p>
+                    <span class="card-link">Preview lecture section <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"></path></svg></span>
+                </button>
+            </div>
+        </section>
+
+        <section id="unit-section" class="content-section page-view" hidden aria-labelledby="selected-unit-heading">
+            <div class="page-navigation">
+                <button type="button" class="back-btn" onclick="backToMaterial()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>
+                    Back to study material
+                </button>
+                <nav class="breadcrumbs" aria-label="Breadcrumb"><ol id="breadcrumbs-units" class="breadcrumb-list"></ol></nav>
+            </div>
+            <ol id="progress-units" class="progress-steps" aria-label="Study progress"></ol>
+            <div class="section-heading">
+                <p class="eyebrow" id="unit-resource-label">Notes</p>
+                <h2 id="selected-unit-heading" tabindex="-1">Select unit</h2>
+                <p>Choose a unit to view its material.</p>
+            </div>
+            <div id="unit-buttons" class="unit-grid"></div>
+        </section>
+
+        <section id="resource-section" class="content-section page-view" hidden aria-labelledby="selected-unit">
+            <div class="page-navigation">
+                <button type="button" class="back-btn" onclick="backToUnits()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>
+                    Back to units
+                </button>
+                <nav class="breadcrumbs" aria-label="Breadcrumb"><ol id="breadcrumbs-resource" class="breadcrumb-list"></ol></nav>
+            </div>
+            <ol id="progress-resource" class="progress-steps" aria-label="Study progress"></ol>
+            <div class="section-heading">
+                <p class="eyebrow" id="resource-label">Study resource</p>
+                <h2 id="selected-unit" tabindex="-1">Selected unit</h2>
+            </div>
+            <div id="resource-content" class="resource-content" aria-live="polite"></div>
+            <section class="ai-placeholder" aria-labelledby="doubt-title">
+                <div class="placeholder-art" aria-hidden="true">
+                    <svg viewBox="0 0 72 72" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M15 18a9 9 0 0 1 9-9h24a9 9 0 0 1 9 9v17a9 9 0 0 1-9 9H34l-12 9v-9a9 9 0 0 1-7-9V18Z"></path>
+                        <path d="M29 24a7 7 0 1 1 12 5c-3 2-5 3-5 7m0 7h.1"></path>
+                        <path d="m54 51 3 6 6 3-6 3-3 6-3-6-6-3 6-3 3-6Z" transform="translate(-2 -8)"></path>
+                    </svg>
+                </div>
+                <div class="placeholder-copy">
+                    <p class="eyebrow">Coming soon</p>
+                    <h3 id="doubt-title">Have a doubt?</h3>
+                    <p>The AI Doubt Solver is not built yet. This panel is inactive and won’t generate answers.</p>
+                    <div class="doubt-input-row">
+                        <input type="text" aria-label="Ask a study question" placeholder="Doubt Solver coming soon" disabled>
+                        <button type="button" disabled aria-label="Send question (coming soon)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4 20-7ZM22 2 11 13"></path></svg>
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </section>
+
+        <section id="pyq-section" class="content-section page-view" hidden aria-labelledby="pyq-heading">
+            <div class="page-navigation">
+                <button type="button" class="back-btn" onclick="backToOptions()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>
+                    Back to options
+                </button>
+                <nav class="breadcrumbs" aria-label="Breadcrumb"><ol id="breadcrumbs-pyq" class="breadcrumb-list"></ol></nav>
+            </div>
+            <ol id="progress-pyq" class="progress-steps" aria-label="Study progress"></ol>
+            <div class="section-heading">
+                <p class="eyebrow">Exam preparation</p>
+                <h2 id="pyq-heading" tabindex="-1">Previous Year Questions</h2>
+                <p>Choose an academic year and paper type.</p>
+            </div>
+            <div class="pyq-panel">
+                <div class="pyq-form-grid">
+                    <div>
+                        <label for="pyq-year" class="pyq-label">Academic year</label>
+                        <select id="pyq-year" class="pyq-select">
+                            <option value="2025-26" selected>2025–26</option>
+                            <option value="2024-25">2024–25</option>
+                            <option value="2023-24">2023–24</option>
+                            <option value="2022-23">2022–23</option>
+                            <option value="2021-22">2021–22</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="pyq-type" class="pyq-label">Question paper type</label>
+                        <select id="pyq-type" class="pyq-select">
+                            <option value="all" selected>All questions / complete paper</option>
+                            <option value="unit">Unit-wise questions</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="pyq-result" class="pyq-result" role="status" aria-live="polite"></div>
+            </div>
+        </section>
     </main>
 
-    <!-- Footer -->
     <footer class="footer">
-        <p>AI College Assistant | Your Learning Companion</p>
+        <div class="footer-main">
+            <a class="brand logo footer-brand" href="#subjects" onclick="goHome(); return false;" aria-label="AI College Assistant home">
+                <span class="brand-mark" aria-hidden="true">
+                    <svg viewBox="0 0 44 44" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m5 18 17-9 17 9-17 9-17-9Z"></path><path d="M12 22v8c6 5 14 5 20 0v-8M39 18v12"></path><path d="m33 5 1.8 4 4.2 1.8-4.2 1.8-1.8 4-1.8-4L27 10.8 31.2 9 33 5Z"></path></svg>
+                </span>
+                <span class="brand-name">AI College <strong>Assistant</strong></span>
+            </a>
+            <p>Made for more focused study sessions.</p>
+        </div>
+        <div class="footer-details">
+            <span>Built by Gaurav Singh, Antra Kumari and Bablu Kumar</span>
+            <span>IIMT College of Engineering, Greater Noida</span>
+            <a href="https://github.com/gauravsinghcoderr/ai-college-assistant" target="_blank" rel="noopener noreferrer">GitHub repository <span aria-hidden="true">↗</span></a>
+        </div>
     </footer>
+
+    <dialog id="command-dialog" class="command-dialog" aria-labelledby="command-title">
+        <div class="command-search">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"></circle><path d="m16 16 4.5 4.5"></path></svg>
+            <label id="command-title" class="visually-hidden" for="command-input">Search subjects</label>
+            <input id="command-input" type="search" placeholder="Search a subject..." autocomplete="off">
+            <kbd>ESC</kbd>
+        </div>
+        <ul id="command-results" class="command-results" role="listbox" aria-label="Subjects">
+            <li><button type="button" class="command-result" role="option" aria-selected="true" data-subject="Data Structures"><span class="command-result-icon command-ds" aria-hidden="true">DS</span><span>Data Structures</span><kbd>↵</kbd></button></li>
+            <li><button type="button" class="command-result" role="option" aria-selected="false" data-subject="Maths-4"><span class="command-result-icon command-maths" aria-hidden="true">M4</span><span>Maths-4</span><kbd>↵</kbd></button></li>
+            <li><button type="button" class="command-result" role="option" aria-selected="false" data-subject="Computer Organization and Architecture"><span class="command-result-icon command-coa" aria-hidden="true">CO</span><span>Computer Organization &amp; Architecture</span><kbd>↵</kbd></button></li>
+        </ul>
+        <p class="command-hint">Use ↑ ↓ to navigate <span>Press Enter to open</span></p>
+    </dialog>
 
 </body>
 </html>
-
-
-
